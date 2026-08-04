@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "streams",
+    "result": [
+      {
+        "stream": { "container": "demo-env-payments-1" },
+        "values": [
+          ["1735732320000000000", "ERROR redis connection pool exhausted"],
+          ["1735732325000000000", "WARN retrying redis connection"]
+        ]
+      }
+    ]
+  }
+}

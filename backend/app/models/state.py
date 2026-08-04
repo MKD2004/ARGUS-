@@ -6,8 +6,9 @@ truth — if this drifts from it, the doc must be updated first per CLAUDE.md.
 
 from __future__ import annotations
 
+import operator
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, model_validator
 
@@ -99,7 +100,11 @@ class IncidentState(BaseModel):
 
     # Investigation
     agents_dispatched: list[str] = []
-    evidence: list[Evidence] = []
+    # Additive reducer: Log/Metrics/Deploy agents run in parallel and each
+    # write their own Evidence entries — LangGraph needs this to merge
+    # concurrent writes instead of raising a conflicting-update error.
+    # See DECISIONS.md D-013.
+    evidence: Annotated[list[Evidence], operator.add] = []
 
     # Hypothesis loop
     candidate_hypotheses: list[Hypothesis] = []

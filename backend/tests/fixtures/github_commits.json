@@ -1,0 +1,9 @@
+[
+  {
+    "sha": "abc1234def5678",
+    "commit": {
+      "message": "Lower redis max-connections for load test\n\nMore detail in the body.",
+      "author": { "name": "Jane Doe", "date": "2026-08-04T10:30:00Z" }
+    }
+  }
+]

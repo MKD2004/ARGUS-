@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "matrix",
+    "result": [
+      {
+        "metric": { "__name__": "stub_requests_total", "service": "payments" },
+        "values": [
+          [1735732320, "12"],
+          [1735732335, "18"]
+        ]
+      }
+    ]
+  }
+}

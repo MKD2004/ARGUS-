@@ -1,0 +1,91 @@
+services:
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8001:8000"
+
+  auth:
+    build: ./services/auth
+    ports:
+      - "8002:8000"
+
+  payments:
+    build: ./services/payments
+    ports:
+      - "8003:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  inventory:
+    build: ./services/inventory
+    ports:
+      - "8004:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    ports:
+      - "5433:5432"
+    volumes:
+      - demo-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:2.9.9
+    ports:
+      - "3100:3100"
+
+  promtail:
+    image: grafana/promtail:2.9.9
+    volumes:
+      - ./observability/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - loki
+
+volumes:
+  demo-pgdata:

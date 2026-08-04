@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: api-gateway
+    static_configs:
+      - targets: ["api-gateway:8000"]
+  - job_name: auth
+    static_configs:
+      - targets: ["auth:8000"]
+  - job_name: payments
+    static_configs:
+      - targets: ["payments:8000"]
+  - job_name: inventory
+    static_configs:
+      - targets: ["inventory:8000"]
